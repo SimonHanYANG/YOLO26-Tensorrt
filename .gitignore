@@ -1,0 +1,21 @@
+dataset/
+runs/
+runs_sperm_tail/
+yolo26n.pt
+
+# 训练输出的旧目录
+runs-early-2608/
+runs_sperm_tail-early-2608/
+video_results-early-2608/
+tracker_video_results-early-2608/
+
+# TensorRT engine 文件
+*.engine
+
+# 推理输出结果
+video_results/
+tracker_video_results/
+video_test_results/
+visualization_results/
+trt_vis_best/
+trt_vis_best_fp16/

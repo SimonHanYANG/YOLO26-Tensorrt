@@ -1,0 +1,112 @@
+============================================================
+  YOLO26-TensorRT 命令速查
+============================================================
+
+所有命令都在项目根目录 /root/yolo26-tensorrt 下执行
+conda 环境: yolo
+GPU: cuda:1
+
+============================================================
+1. 训练
+============================================================
+
+conda run -n yolo python train.py
+
+  - 默认 200 epochs
+  - 输出: runs/detect/train/weights/best.pt, last.pt
+
+============================================================
+2. 验证 mAP
+============================================================
+
+conda run -n yolo python val.py
+
+  - 加载 best.pt 在验证集上评估 mAP
+
+============================================================
+3. 图片可视化（PyTorch 模型）
+============================================================
+
+conda run -n yolo python visualize_predictions.py
+
+  - 输出: visualization_results/pred/（原图大小 1920x1200）
+
+============================================================
+4. 导出 TensorRT Engine（FP32 + FP16）
+============================================================
+
+conda run -n yolo python export_engine.py
+
+  - 输出: runs/detect/train/weights/best.engine（FP32）
+  - 输出: runs/detect/train/weights/best_fp16.engine（FP16）
+
+============================================================
+5. TensorRT 图片推理 + 测速
+============================================================
+
+# FP32
+conda run -n yolo python tensorrt_visualize_benchmark.py --engine best.engine
+
+# FP16
+conda run -n yolo python tensorrt_visualize_benchmark.py --engine best_fp16.engine
+
+  - 可视化: trt_vis_best/pred/ 或 trt_vis_best_fp16/pred/
+  - 输出统计: 平均推理时间、FPS、最快/最慢
+
+============================================================
+6. TensorRT 视频推理（检测）
+============================================================
+
+# FP32
+conda run -n yolo python tensorrt_video_test.py --engine best.engine
+
+# FP16
+conda run -n yolo python tensorrt_video_test.py --engine best_fp16.engine
+
+  - 输出: video_test_results/<engine>_detect/
+  - 绿色 bbox，无文字，统一 1920x1200 输出
+
+============================================================
+7. TensorRT 视频推理（跟踪 + 轨迹）
+============================================================
+
+# FP32 + ByteTrack
+conda run -n yolo python tensorrt_video_test.py --engine best.engine --mode track
+
+# FP16 + ByteTrack
+conda run -n yolo python tensorrt_video_test.py --engine best_fp16.engine --mode track
+
+  - 输出: video_test_results/<engine>_track/
+  - 绿色 bbox + 橙色轨迹线
+
+============================================================
+8. 检测 + 跟踪 一起跑（4个视频）
+============================================================
+
+# FP32（检测 + 跟踪）
+conda run -n yolo python tensorrt_video_test.py --engine best.engine --mode both
+
+# FP16（检测 + 跟踪）
+conda run -n yolo python tensorrt_video_test.py --engine best_fp16.engine --mode both
+
+============================================================
+tensorrt_video_test.py 可选参数
+============================================================
+
+--engine    engine 文件路径（必填）
+--video     视频路径（默认: gray_video.mp4）
+--mode      detect / track / both（默认: detect）
+--output    输出目录（默认: video_test_results）
+--conf      置信度阈值（默认: 0.25）
+--iou       IoU 阈值（默认: 0.7）
+--tracker   跟踪器（默认: bytetrack.yaml，可选 botsort.yaml）
+
+============================================================
+tensorrt_visualize_benchmark.py 可选参数
+============================================================
+
+--engine    engine 文件路径（必填）
+--output    输出目录（默认: trt_vis_<engine名>）
+--warmup    warmup 次数（默认: 5）
+--conf      置信度阈值（默认: 0.25）
+--iou       IoU 阈值（默认: 0.7）
