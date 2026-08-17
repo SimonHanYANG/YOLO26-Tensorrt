@@ -19,3 +19,4 @@ video_test_results/
 visualization_results/
 trt_vis_best/
 trt_vis_best_fp16/
+det_seg_results/

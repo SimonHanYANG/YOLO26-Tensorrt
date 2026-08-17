@@ -90,6 +90,49 @@ conda run -n yolo python tensorrt_video_test.py --engine best.engine --mode both
 conda run -n yolo python tensorrt_video_test.py --engine best_fp16.engine --mode both
 
 ============================================================
+9. 检测 + 分割 联合推理（TensorRT + ENet）
+============================================================
+
+# 依赖分割项目: /root/Segmentation-Model-Zoo-for-Super-Small-Object/
+# 输出 4 种视频:
+#   *_full.mp4      - 检测框 + 轨迹 + 分割叠加
+#   *_det_track.mp4 - 检测框 + 轨迹
+#   *_seg.mp4       - 仅分割叠加
+#   *_det_seg.mp4   - 检测框 + 分割叠加
+
+# FP32
+conda run -n yolo python det_seg_video.py --engine best.engine --video dataset/XiangYa-test-videoes/gray_video.mp4
+
+# FP16
+conda run -n yolo python det_seg_video.py --engine best_fp16.engine --video dataset/XiangYa-test-videoes/gray_video.mp4
+
+# 自定义参数
+conda run -n yolo python det_seg_video.py \
+    --engine best.engine \
+    --video dataset/XiangYa-test-videoes/gray_video.mp4 \
+    --output my_results \
+    --conf 0.3 \
+    --iou 0.5 \
+    --bbox_size 64 \
+    --seg_alpha 0.5 \
+    --tracker bytetrack.yaml
+
+============================================================
+det_seg_video.py 可选参数
+============================================================
+
+--engine      TensorRT engine 路径（必填）
+--video       输入视频路径（必填）
+--seg_model   分割模型目录（默认: ENet_sperm_ROINAHead_Xiangya_260817）
+--output      输出目录（默认: det_seg_results）
+--conf        检测置信度阈值（默认: 0.25）
+--iou         NMS IoU 阈值（默认: 0.45）
+--tracker     跟踪器配置（默认: bytetrack.yaml）
+--bbox_size   检测框大小（默认: 64）
+--seg_alpha   分割叠加透明度 0-1（默认: 0.4）
+--device      设备（默认: cuda:1）
+
+============================================================
 tensorrt_video_test.py 可选参数
 ============================================================
 

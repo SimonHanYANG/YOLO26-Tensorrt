@@ -5,7 +5,7 @@
 ## 项目流程
 
 ```
-训练 (PyTorch) → 验证 (mAP) → 导出 TensorRT Engine (FP32/FP16) → 推理 (图片/视频/跟踪)
+训练 (PyTorch) → 验证 (mAP) → 导出 TensorRT Engine (FP32/FP16) → 推理 (图片/视频/跟踪/检测+分割)
 ```
 
 ## 快速开始
@@ -49,6 +49,9 @@ python tensorrt_video_test.py --engine best.engine
 
 # 7. TensorRT 视频推理（跟踪 + 轨迹）
 python tensorrt_video_test.py --engine best.engine --mode track
+
+# 8. 检测 + 分割联合推理（需要先准备好 1920x1200 视频）
+python det_seg_video.py --engine best.engine --video gray_video_1920x1200.mp4
 ```
 
 ## 文件说明
@@ -61,6 +64,7 @@ python tensorrt_video_test.py --engine best.engine --mode track
 | `visualize_predictions.py` | 图片推理可视化（原图大小 1920x1200） |
 | `tensorrt_visualize_benchmark.py` | TensorRT 图片推理 + 速度测试 |
 | `tensorrt_video_test.py` | 视频推理主脚本：检测/跟踪，统一 1920x1200 输出 |
+| `det_seg_video.py` | 检测+分割联合推理：TensorRT 检测 + ByteTrack 跟踪 + ENet 分割，输出 4 种视频 |
 | `tensorrt_video_inference.py` | 视频检测推理（旧版） |
 | `tensorrt_video_tracker_inference.py` | 视频跟踪推理（旧版） |
 

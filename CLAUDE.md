@@ -25,7 +25,8 @@
 | `tensorrt_visualize_benchmark.py` | TensorRT 图片推理可视化 + 速度测试（支持命令行参数） |
 | `tensorrt_video_inference.py` | 视频的 TensorRT 检测推理，输出带标注的视频和日志 |
 | `tensorrt_video_tracker_inference.py` | 视频的 TensorRT 跟踪推理（ByteTrack/BotSort），输出带跟踪ID的视频和日志 |
-| `tensorrt_video_test.py` | **新** 视频推理主脚本：检测+跟踪，绿色bbox，轨迹绘制，统一1920x1200输出，支持命令行参数 |
+| `tensorrt_video_test.py` | 视频推理主脚本：检测+跟踪，绿色bbox，轨迹绘制，统一1920x1200输出，支持命令行参数 |
+| `det_seg_video.py` | **新** 检测+分割联合推理：TensorRT检测+ByteTrack+ENet分割，输出4种视频（full/det_track/seg/det_seg） |
 | `visualize_predictions.py` | 用训练好的模型对图片做推理，保存原图大小（1920x1200）带 bbox 叠加的可视化结果 |
 
 ## 数据集
@@ -47,6 +48,7 @@
 5. 图片测速:   conda run -n yolo python tensorrt_visualize_benchmark.py --engine best.engine
 6. 视频推理:   conda run -n yolo python tensorrt_video_test.py --engine best.engine
 7. 视频跟踪:   conda run -n yolo python tensorrt_video_test.py --engine best.engine --mode track
+8. 检测+分割:  conda run -n yolo python det_seg_video.py --engine best.engine --video dataset/XiangYa-test-videoes/gray_video.mp4
 ```
 
 ## 当前进度
@@ -60,6 +62,7 @@
 - [x] TensorRT engine 导出完成：`best.engine`（FP32）、`best_fp16.engine`（FP16）
 - [x] `tensorrt_visualize_benchmark.py` 图片推理可视化 + 测速
 - [x] `tensorrt_video_test.py` 视频推理（检测+跟踪），统一 1920x1200 输出
+- [x] `det_seg_video.py` 检测+分割联合推理，输出 4 种视频
 - [ ] 验证 mAP（val.py）
 - [ ] 导出 ONNX（export_onnx.py）
 
@@ -80,6 +83,31 @@
 conda run -n yolo pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
 ```
 
+## 外部依赖：分割项目
+
+`det_seg_video.py` 依赖分割项目 `/root/Segmentation-Model-Zoo-for-Super-Small-Object/`：
+- ENet 模型：`models/ENet_sperm_ROINAHead_Xiangya_260817/model.pth` + `config.yml`
+- 分割类别（4类）：class 0=non-measurable head(红), class 1=nuclear(绿), class 2=acrosome(蓝), class 3=mid-piece(黄)
+- 输入：64x64 ROI，**BGR** 格式（不做 RGB 转换）
+- 输出：4 通道 sigmoid 二值 mask
+- 直接 import `model_zoo.enet.ENet`，不走 archs.py（archs.py 依赖 timm 等）
+
+### ⚠️ 分割预处理注意事项（重要）
+
+训练代码 `dataset.py` 有**双重 /255** 的行为：
+1. `A.Normalize()` 对 uint8 输入先 `/255` 再 ImageNet 归一化 → 输出 float32 ≈ [-2.1, 2.6]
+2. `dataset.py` 之后又 `img / 255` → 输出 ≈ [-0.008, 0.010]
+
+推理时必须复现同样的预处理：
+```python
+roi_float = roi_bgr.astype('float32') / 255.0          # 第一次 /255
+roi_norm = (roi_float - mean) / std                     # ImageNet 归一化
+roi_final = roi_norm / 255.0                            # 第二次 /255 (训练代码的 bug)
+```
+同时保持 **BGR** 格式（训练用 cv2.imread 默认 BGR，不做 RGB 转换）。
+
+分割项目使用 1920x1200 的预处理视频 `gray_video_1920x1200.mp4`（已保存到 dataset 目录）。
+
 ## 注意事项
 
 - 训练输出保存在 `runs/detect/train/`
@@ -89,5 +117,6 @@ conda run -n yolo pip install torch torchvision --index-url https://download.pyt
 - 原始图片分辨率为 **1920x1200**，推理内部 resize 到 640，但 `save=True` 输出的可视化图片保持原图大小
 - `.gitignore` 已排除 dataset/、runs/、yolo26n.pt 等大文件
 - `tensorrt_video_test.py` 会将所有帧统一 resize 到 1920x1200 后再推理和保存
-- 视频测试素材：`dataset/XiangYa-test-videoes/gray_video.mp4`
+- 视频测试素材：`dataset/XiangYa-test-videoes/gray_video.mp4`（原始 3456x2160）
+- 预处理视频：`dataset/XiangYa-test-videoes/gray_video_1920x1200.mp4`（1920x1200，det_seg_video.py 使用）
 - `tensorrt_visualize_benchmark.py` 和 `tensorrt_video_test.py` 支持命令行参数 `--engine`、`--mode` 等
