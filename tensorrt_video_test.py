@@ -246,15 +246,23 @@ def main():
                         help="跟踪器（默认: bytetrack.yaml，可选 botsort.yaml）")
     args = parser.parse_args()
 
-    # 解析 engine 路径
+    # 解析 engine 路径 (支持简写如 best_n.engine)
     engine_path = Path(args.engine)
     if not engine_path.exists():
-        alt = Path("runs/detect/train/weights") / engine_path.name
-        if alt.exists():
-            engine_path = alt
-        else:
-            print(f"错误: 找不到 engine 文件 {args.engine}")
-            return
+        # 尝试在各 train 目录下查找
+        for subdir in Path("runs/detect").glob("train_*/weights"):
+            alt = subdir / engine_path.name
+            if alt.exists():
+                engine_path = alt
+                break
+        # 兼容旧路径
+        if not engine_path.exists():
+            alt = Path("runs/detect/train/weights") / engine_path.name
+            if alt.exists():
+                engine_path = alt
+            else:
+                print(f"错误: 找不到 engine 文件 {args.engine}")
+                return
 
     modes = ["detect", "track"] if args.mode == "both" else [args.mode]
     for mode in modes:

@@ -27,32 +27,47 @@ pip install ultralytics
 
 ### 典型工作流
 
+所有脚本支持 `--model n/s/m` 参数，输出目录自动区分（`train_n/`、`train_s/`、`train_m/`）。
+
 ```bash
 # 1. 训练
-python train.py
+python train.py                          # YOLO26-N (默认)
+python train.py --model yolo26s.pt       # YOLO26-S
+python train.py --model yolo26m.pt       # YOLO26-M
 
 # 2. 验证 mAP
-python val.py
+python val.py --model n
+python val.py --model s
+python val.py --model m
 
 # 3. 图片可视化
-python visualize_predictions.py
+python visualize_predictions.py --model n
 
 # 4. 导出 TensorRT（FP32 + FP16）
-python export_engine.py
+python export_engine.py --model n
+python export_engine.py --model s
+python export_engine.py --model m
 
 # 5. TensorRT 图片推理 + 测速
-python tensorrt_visualize_benchmark.py --engine best.engine
-python tensorrt_visualize_benchmark.py --engine best_fp16.engine
+python tensorrt_visualize_benchmark.py --engine runs/detect/train_n/weights/best.engine
 
 # 6. TensorRT 视频推理（检测）
-python tensorrt_video_test.py --engine best.engine
+python tensorrt_video_test.py --engine runs/detect/train_n/weights/best.engine
 
 # 7. TensorRT 视频推理（跟踪 + 轨迹）
-python tensorrt_video_test.py --engine best.engine --mode track
+python tensorrt_video_test.py --engine runs/detect/train_n/weights/best.engine --mode track
 
 # 8. 检测 + 分割联合推理（需要先准备好 1920x1200 视频）
-python det_seg_video.py --engine best.engine --video gray_video_1920x1200.mp4
+python det_seg_video.py --engine runs/detect/train_n/weights/best.engine --video gray_video_1920x1200.mp4
 ```
+
+### 输出目录
+
+| 模型 | 训练目录 | Engine 文件 |
+|------|----------|-------------|
+| YOLO26-N | `runs/detect/train_n/` | `best.engine`, `best_fp16.engine` |
+| YOLO26-S | `runs/detect/train_s/` | `best.engine`, `best_fp16.engine` |
+| YOLO26-M | `runs/detect/train_m/` | `best.engine`, `best_fp16.engine` |
 
 ## 文件说明
 

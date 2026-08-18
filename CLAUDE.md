@@ -38,33 +38,54 @@
 - 验证集：103 张图片
 - 格式：标准 YOLO 格式（images/ + labels/ + data.yaml）
 
-## 典型工作流
+## 典型工作流（支持 n/s/m 多模型）
+
+所有脚本支持 `--model` 参数选择模型大小，输出目录自动区分。
 
 ```
+# YOLO26-N (默认)
 1. 训练:       conda run -n yolo python train.py
-2. 验证:       conda run -n yolo python val.py
-3. 可视化:     conda run -n yolo python visualize_predictions.py
-4. 导出TRT:    conda run -n yolo python export_engine.py          # 导出 FP32 + FP16
-5. 图片测速:   conda run -n yolo python tensorrt_visualize_benchmark.py --engine best.engine
-6. 视频推理:   conda run -n yolo python tensorrt_video_test.py --engine best.engine
-7. 视频跟踪:   conda run -n yolo python tensorrt_video_test.py --engine best.engine --mode track
-8. 检测+分割:  conda run -n yolo python det_seg_video.py --engine best.engine --video dataset/XiangYa-test-videoes/gray_video.mp4
+2. 验证:       conda run -n yolo python val.py --model n
+3. 可视化:     conda run -n yolo python visualize_predictions.py --model n
+4. 导出TRT:    conda run -n yolo python export_engine.py --model n
+5. 图片测速:   conda run -n yolo python tensorrt_visualize_benchmark.py --engine runs/detect/train_n/weights/best.engine
+6. 视频推理:   conda run -n yolo python tensorrt_video_test.py --engine runs/detect/train_n/weights/best.engine
+7. 视频跟踪:   conda run -n yolo python tensorrt_video_test.py --engine runs/detect/train_n/weights/best.engine --mode track
+8. 检测+分割:  conda run -n yolo python det_seg_video.py --engine runs/detect/train_n/weights/best.engine --video dataset/XiangYa-test-videoes/gray_video_1920x1200.mp4
+
+# YOLO26-S / M (把 n 换成 s 或 m 即可)
+1. 训练:       conda run -n yolo python train.py --model yolo26s.pt
+2. 验证:       conda run -n yolo python val.py --model s
+3. 可视化:     conda run -n yolo python visualize_predictions.py --model s
+4. 导出TRT:    conda run -n yolo python export_engine.py --model s
+5. 图片测速:   conda run -n yolo python tensorrt_visualize_benchmark.py --engine runs/detect/train_s/weights/best.engine
+6. 视频推理:   conda run -n yolo python tensorrt_video_test.py --engine runs/detect/train_s/weights/best.engine
+7. 视频跟踪:   conda run -n yolo python tensorrt_video_test.py --engine runs/detect/train_s/weights/best.engine --mode track
+8. 检测+分割:  conda run -n yolo python det_seg_video.py --engine runs/detect/train_s/weights/best.engine --video dataset/XiangYa-test-videoes/gray_video_1920x1200.mp4
 ```
 
 ## 当前进度
 
 - [x] 环境配置：yolo conda 环境，ultralytics 8.4.120 已安装
 - [x] 数据集配置：`data.yaml` 的 `path` 已改为服务器路径
-- [x] `train.py` 已修改：数据集指向 `Xiangya-yolo-head-dataset-260817`，device=1
-- [x] 1 epoch 训练测试通过（414 train / 103 val，1753 instances）
-- [x] 200 epochs 正式训练完成
-- [x] `visualize_predictions.py` 编写完成并测试通过
-- [x] TensorRT engine 导出完成：`best.engine`（FP32）、`best_fp16.engine`（FP16）
+- [x] 所有脚本支持 `--model n/s/m` 多模型参数
+- [x] YOLO26-N: 200 epochs 训练完成
+- [ ] YOLO26-S: 待训练
+- [ ] YOLO26-M: 待训练
+- [x] TensorRT engine 导出（FP32 + FP16）
 - [x] `tensorrt_visualize_benchmark.py` 图片推理可视化 + 测速
 - [x] `tensorrt_video_test.py` 视频推理（检测+跟踪），统一 1920x1200 输出
 - [x] `det_seg_video.py` 检测+分割联合推理，输出 4 种视频
 - [ ] 验证 mAP（val.py）
 - [ ] 导出 ONNX（export_onnx.py）
+
+## 输出目录约定
+
+| 模型 | 训练目录 | Engine |
+|------|----------|--------|
+| N | `runs/detect/train_n/` | `best.engine`, `best_fp16.engine` |
+| S | `runs/detect/train_s/` | `best.engine`, `best_fp16.engine` |
+| M | `runs/detect/train_m/` | `best.engine`, `best_fp16.engine` |
 
 ## 环境
 

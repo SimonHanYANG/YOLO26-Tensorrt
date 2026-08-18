@@ -15,8 +15,16 @@ tracker_video_results-early-2608/
 # 推理输出结果
 video_results/
 tracker_video_results/
-video_test_results/
-visualization_results/
-trt_vis_best/
-trt_vis_best_fp16/
-det_seg_results/
+video_test_results*/
+visualization_results*/
+trt_vis_best*/
+trt_vis_best_fp16*/
+det_seg_results*/
+visualize_results*/
+runs-yolo26*/
+
+# 预训练权重 (会自动下载)
+yolo26s.pt
+yolo26m.pt
+yolo26l.pt
+yolo26x.pt

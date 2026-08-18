@@ -1,13 +1,47 @@
+"""
+train.py - YOLO26 训练脚本
+用法:
+    conda run -n yolo python train.py                       # 默认 yolo26n
+    conda run -n yolo python train.py --model yolo26s.pt    # YOLO26-S
+    conda run -n yolo python train.py --model yolo26m.pt    # YOLO26-M
+    conda run -n yolo python train.py --model yolo26s.pt --epochs 300 --imgsz 640
+"""
+
+import argparse
 from ultralytics import YOLO
 
-# Load a model
-model = YOLO("yolo26n.yaml")  # build a new model from YAML
-model = YOLO("yolo26n.pt")  # load a pretrained model (recommended for training)
-model = YOLO("yolo26n.yaml").load("yolo26n.pt")  # build from YAML and transfer weights
 
-# Train the model
-# tail
-# results = model.train(data=r"dataset/yolo_dataset2_better/data.yaml", epochs=200, imgsz=640)
-# head
-results = model.train(data=r"dataset/Xiangya-yolo-head-dataset-260817/data.yaml", epochs=200, imgsz=640, device=1)
+def main():
+    parser = argparse.ArgumentParser(description="YOLO26 训练")
+    parser.add_argument("--model", default="yolo26n.pt", help="预训练模型 (yolo26n.pt / yolo26s.pt / yolo26m.pt / ...)")
+    parser.add_argument("--data", default="dataset/Xiangya-yolo-head-dataset-260817/data.yaml", help="数据集配置")
+    parser.add_argument("--epochs", type=int, default=200, help="训练轮数")
+    parser.add_argument("--imgsz", type=int, default=640, help="输入图片尺寸")
+    parser.add_argument("--device", type=int, default=1, help="GPU 设备号")
+    parser.add_argument("--batch", type=int, default=-1, help="batch size (-1=auto)")
+    parser.add_argument("--name", default=None, help="实验名称 (默认根据模型自动生成)")
+    args = parser.parse_args()
 
+    # 自动生成实验名称: yolo26n → train_n, yolo26s → train_s
+    model_short = args.model.replace(".pt", "").replace("yolo", "").replace(".yaml", "")
+    if args.name is None:
+        args.name = f"train_{model_short}"
+
+    print(f"模型: {args.model}")
+    print(f"数据集: {args.data}")
+    print(f"实验名称: {args.name}")
+    print(f"epochs: {args.epochs}, imgsz: {args.imgsz}, device: cuda:{args.device}")
+
+    model = YOLO(args.model)
+    model.train(
+        data=args.data,
+        epochs=args.epochs,
+        imgsz=args.imgsz,
+        device=args.device,
+        name=args.name,
+        exist_ok=True,
+    )
+
+
+if __name__ == "__main__":
+    main()
