@@ -21,7 +21,7 @@ trt_vis_best*/
 trt_vis_best_fp16*/
 det_seg_results*/
 visualize_results*/
-runs-yolo26*/
+runs/detect/train_26*/
 
 # 预训练权重 (会自动下载)
 yolo26s.pt

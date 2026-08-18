@@ -13,7 +13,7 @@ from ultralytics import YOLO
 
 def main():
     parser = argparse.ArgumentParser(description="YOLO26 验证 mAP")
-    parser.add_argument("--model", default="n", help="模型大小 (n/s/m/l/x)")
+    parser.add_argument("--model", default="26n", help="模型标识 (26n/26s/26m)")
     parser.add_argument("--weights", default=None, help="自定义权重路径 (优先于 --model)")
     parser.add_argument("--data", default="dataset/Xiangya-yolo-head-dataset-260817/data.yaml", help="数据集配置")
     parser.add_argument("--device", type=int, default=1, help="GPU 设备号")
@@ -22,7 +22,7 @@ def main():
     if args.weights:
         weights = args.weights
     else:
-        weights = f"runs/detect/train_{args.model}/weights/best.pt"
+        weights = f"runs/detect/train_{args.model}/weights/best.pt"  # train_26n, train_26s, train_26m
 
     print(f"权重: {weights}")
     model = YOLO(weights)

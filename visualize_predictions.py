@@ -15,7 +15,7 @@ from ultralytics import YOLO
 
 def main():
     parser = argparse.ArgumentParser(description="图片推理可视化")
-    parser.add_argument("--model", default="n", help="模型大小 (n/s/m/l/x)")
+    parser.add_argument("--model", default="26n", help="模型标识 (26n/26s/26m)")
     parser.add_argument("--weights", default=None, help="自定义权重路径")
     parser.add_argument("--data", default="dataset/Xiangya-yolo-head-dataset-260817/data.yaml", help="数据集配置")
     parser.add_argument("--conf", type=float, default=0.25, help="置信度阈值")

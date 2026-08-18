@@ -22,10 +22,10 @@ def main():
     parser.add_argument("--name", default=None, help="实验名称 (默认根据模型自动生成)")
     args = parser.parse_args()
 
-    # 自动生成实验名称: yolo26n → train_n, yolo26s → train_s
-    model_short = args.model.replace(".pt", "").replace("yolo", "").replace(".yaml", "")
+    # 自动生成实验名称: yolo26n → train_26n, yolo26s → train_26s
+    model_short = args.model.replace(".pt", "").replace(".yaml", "")  # yolo26s
     if args.name is None:
-        args.name = f"train_{model_short}"
+        args.name = f"train_{model_short.replace('yolo', '')}"  # train_26s
 
     print(f"模型: {args.model}")
     print(f"数据集: {args.data}")

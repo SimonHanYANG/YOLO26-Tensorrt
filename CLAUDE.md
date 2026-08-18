@@ -45,23 +45,23 @@
 ```
 # YOLO26-N (默认)
 1. 训练:       conda run -n yolo python train.py
-2. 验证:       conda run -n yolo python val.py --model n
-3. 可视化:     conda run -n yolo python visualize_predictions.py --model n
-4. 导出TRT:    conda run -n yolo python export_engine.py --model n
-5. 图片测速:   conda run -n yolo python tensorrt_visualize_benchmark.py --engine runs/detect/train_n/weights/best.engine
-6. 视频推理:   conda run -n yolo python tensorrt_video_test.py --engine runs/detect/train_n/weights/best.engine
-7. 视频跟踪:   conda run -n yolo python tensorrt_video_test.py --engine runs/detect/train_n/weights/best.engine --mode track
-8. 检测+分割:  conda run -n yolo python det_seg_video.py --engine runs/detect/train_n/weights/best.engine --video dataset/XiangYa-test-videoes/gray_video_1920x1200.mp4
+2. 验证:       conda run -n yolo python val.py --model 26n
+3. 可视化:     conda run -n yolo python visualize_predictions.py --model 26n
+4. 导出TRT:    conda run -n yolo python export_engine.py --model 26n
+5. 图片测速:   conda run -n yolo python tensorrt_visualize_benchmark.py --engine runs/detect/train_26n/weights/best.engine
+6. 视频推理:   conda run -n yolo python tensorrt_video_test.py --engine runs/detect/train_26n/weights/best.engine
+7. 视频跟踪:   conda run -n yolo python tensorrt_video_test.py --engine runs/detect/train_26n/weights/best.engine --mode track
+8. 检测+分割:  conda run -n yolo python det_seg_video.py --engine runs/detect/train_26n/weights/best.engine --video dataset/XiangYa-test-videoes/gray_video_1920x1200.mp4
 
-# YOLO26-S / M (把 n 换成 s 或 m 即可)
+# YOLO26-S / M (把 26n 换成 26s 或 26m 即可)
 1. 训练:       conda run -n yolo python train.py --model yolo26s.pt
-2. 验证:       conda run -n yolo python val.py --model s
-3. 可视化:     conda run -n yolo python visualize_predictions.py --model s
-4. 导出TRT:    conda run -n yolo python export_engine.py --model s
-5. 图片测速:   conda run -n yolo python tensorrt_visualize_benchmark.py --engine runs/detect/train_s/weights/best.engine
-6. 视频推理:   conda run -n yolo python tensorrt_video_test.py --engine runs/detect/train_s/weights/best.engine
-7. 视频跟踪:   conda run -n yolo python tensorrt_video_test.py --engine runs/detect/train_s/weights/best.engine --mode track
-8. 检测+分割:  conda run -n yolo python det_seg_video.py --engine runs/detect/train_s/weights/best.engine --video dataset/XiangYa-test-videoes/gray_video_1920x1200.mp4
+2. 验证:       conda run -n yolo python val.py --model 26s
+3. 可视化:     conda run -n yolo python visualize_predictions.py --model 26s
+4. 导出TRT:    conda run -n yolo python export_engine.py --model 26s
+5. 图片测速:   conda run -n yolo python tensorrt_visualize_benchmark.py --engine runs/detect/train_26s/weights/best.engine
+6. 视频推理:   conda run -n yolo python tensorrt_video_test.py --engine runs/detect/train_26s/weights/best.engine
+7. 视频跟踪:   conda run -n yolo python tensorrt_video_test.py --engine runs/detect/train_26s/weights/best.engine --mode track
+8. 检测+分割:  conda run -n yolo python det_seg_video.py --engine runs/detect/train_26s/weights/best.engine --video dataset/XiangYa-test-videoes/gray_video_1920x1200.mp4
 ```
 
 ## 当前进度
@@ -83,9 +83,9 @@
 
 | 模型 | 训练目录 | Engine |
 |------|----------|--------|
-| N | `runs/detect/train_n/` | `best.engine`, `best_fp16.engine` |
-| S | `runs/detect/train_s/` | `best.engine`, `best_fp16.engine` |
-| M | `runs/detect/train_m/` | `best.engine`, `best_fp16.engine` |
+| N | `runs/detect/train_26n/` | `best.engine`, `best_fp16.engine` |
+| S | `runs/detect/train_26s/` | `best.engine`, `best_fp16.engine` |
+| M | `runs/detect/train_26m/` | `best.engine`, `best_fp16.engine` |
 
 ## 环境
 
